@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  Jetons de design                                                   */
+/* ------------------------------------------------------------------ */
+@theme inline {
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-code), ui-monospace, SFMono-Regular, monospace;
+
+  --color-fond: #040b0a;
+  --color-surface: #0b1b1a;
+  --color-surface-haute: #112a28;
+  --color-encre: #eef3f1;
+  --color-encre-2: #b6c5c1;
+  --color-encre-3: #84958f;
+  --color-trait: rgb(255 255 255 / 0.08);
+  --color-trait-fort: rgb(255 255 255 / 0.14);
+
+  --color-or: #dcb873;
+  --color-or-clair: #f3dcab;
+  --color-sarcelle: #2fb8a8;
+  --color-sarcelle-clair: #7fe3d6;
+  --color-rose: #e77a9d;
+  --color-violet: #9b8ff0;
+  --color-menthe: #45c896;
+
+  /* États (toujours accompagnés d'une icône ou d'un libellé) */
+  --color-bon: #3ecf6e;
+  --color-attention: #fab219;
+  --color-serieux: #ec835a;
+  --color-critique: #f0605d;
+
+  --radius-carte: 18px;
+  --animate-apparition: apparition 0.35s ease-out both;
+  --animate-pulsation: pulsation 3.2s ease-in-out infinite;
+
+  @keyframes apparition {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pulsation {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Séries des graphiques — ordre fixe, validé (daltonisme et contraste)
+     sur la surface sombre #0b1b1a. */
+  --serie-1: #199e70;
+  --serie-2: #9085e9;
+  --serie-3: #c98500;
+  --serie-4: #d55181;
+  --serie-5: #3987e5;
+  --serie-6: #d95926;
+
+  --graphique-grille: rgb(255 255 255 / 0.07);
+  --graphique-axe: rgb(255 255 255 / 0.16);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Base                                                               */
+/* ------------------------------------------------------------------ */
+html {
+  background: var(--color-fond);
+}
+
+body {
+  min-height: 100dvh;
+  color: var(--color-encre);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  background:
+    radial-gradient(1100px 680px at 58% 12%, rgb(28 84 77 / 0.5), transparent 68%),
+    radial-gradient(900px 640px at 100% 100%, rgb(16 58 64 / 0.38), transparent 62%),
+    radial-gradient(700px 520px at 0% 85%, rgb(20 52 46 / 0.3), transparent 60%), var(--color-fond);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgb(220 184 115 / 0.35);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-or);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Barres de défilement discrètes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Composants                                                         */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .carte {
+    position: relative;
+    /* Dans une grille ou une rangée flexible, une carte ne doit jamais élargir la page :
+       son contenu large (tableau, graphique) défile à l'intérieur. */
+    min-width: 0;
+    border-radius: var(--radius-carte);
+    border: 1px solid var(--color-trait);
+    background: linear-gradient(
+      150deg,
+      rgb(27 68 63 / 0.5) 0%,
+      rgb(10 27 26 / 0.78) 42%,
+      rgb(6 16 15 / 0.88) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.06),
+      0 24px 48px -28px rgb(0 0 0 / 0.85);
+    backdrop-filter: blur(16px);
+  }
+
+  .carte-plate {
+    border-radius: 14px;
+    border: 1px solid var(--color-trait);
+    background: rgb(4 12 11 / 0.55);
+  }
+
+  .champ {
+    width: 100%;
+    min-height: 2.75rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-trait-fort);
+    background: rgb(3 10 9 / 0.6);
+    padding: 0.6rem 0.85rem;
+    font-size: 0.925rem;
+    color: var(--color-encre);
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .champ::placeholder {
+    color: rgb(132 149 143 / 0.75);
+  }
+  .champ:hover {
+    border-color: rgb(255 255 255 / 0.22);
+  }
+  .champ:focus {
+    outline: none;
+    border-color: rgb(220 184 115 / 0.75);
+    box-shadow: 0 0 0 3px rgb(220 184 115 / 0.16);
+  }
+  .champ:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  select.champ {
+    appearance: none;
+    padding-right: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2384958f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+  }
+  select.champ option {
+    background: #0b1b1a;
+    color: var(--color-encre);
+  }
+  textarea.champ {
+    min-height: 6rem;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  input[type="date"].champ,
+  input[type="datetime-local"].champ {
+    color-scheme: dark;
+  }
+
+  .etiquette {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-encre-2);
+  }
+
+  .surtitre {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-encre-3);
+  }
+
+  .tableau {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .tableau th {
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-encre-3);
+    border-bottom: 1px solid var(--color-trait);
+    white-space: nowrap;
+  }
+  .tableau td {
+    padding: 0.8rem 0.85rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.05);
+    vertical-align: middle;
+  }
+  .tableau th:first-child,
+  .tableau td:first-child {
+    padding-left: 1.25rem;
+  }
+  .tableau th:last-child,
+  .tableau td:last-child {
+    padding-right: 1.25rem;
+  }
+  .tableau tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .tableau tbody tr {
+    transition: background 0.12s;
+  }
+  .tableau tbody tr:hover {
+    background: rgb(255 255 255 / 0.03);
+  }
+  .tableau .chiffre {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
